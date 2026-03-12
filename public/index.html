@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>X Timeline</title>
+
+  <style>
+    :root {
+      --bg: linear-gradient(180deg, #ffe4f0 0%, #ffffff 40%);
+      --card-bg: #ffffff;
+      --card-shadow: rgba(255, 105, 180, 0.25);
+      --text: #d63384;
+      --hover-shadow: rgba(255, 105, 180, 0.35);
+    }
+
+    /* ダークモード */
+    .dark {
+      --bg: linear-gradient(180deg, #2b2b2b 0%, #1a1a1a 40%);
+      --card-bg: #2a2a2a;
+      --card-shadow: rgba(0, 0, 0, 0.4);
+      --text: #ff8acb;
+      --hover-shadow: rgba(255, 140, 200, 0.4);
+    }
+
+    body {
+      font-family: "Inter", "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 30px 0 10px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    #modeToggle {
+      display: block;
+      margin: 0 auto 20px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      background: #ff8acb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #modeToggle:hover {
+      background: #ff6fb8;
+    }
+
+    #timeline {
+      max-width: 600px;
+      margin: 0 auto;
+      padding-bottom: 100px;
+    }
+
+    #timeline > div {
+      background: var(--card-bg);
+      margin: 25px auto;
+      padding: 20px 15px;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px var(--card-shadow);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      animation: fadeIn 0.6s ease;
+    }
+
+    #timeline > div:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px var(--hover-shadow);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #sentinel {
+      height: 60px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>X Timeline</h1>
+  <button id="modeToggle">🌙 ダークモード</button>
+
+  <div id="timeline"></div>
+  <div id="sentinel"></div>
+
+  <script async src="https://platform.twitter.com/widgets.js"></script>
+
+  <script>
+    let cursor = 0;
+    let loading = false;
+    let hasMore = true;
+
+    async function loadMore() {
+      if (loading || !hasMore) return;
+      loading = true;
+
+      const res = await fetch(`/api/timeline?cursor=${cursor}`);
+      const data = await res.json();
+
+      const container = document.getElementById("timeline");
+
+      for (const id of data.tweets) {
+        const div = document.createElement("div");
+        container.appendChild(div);
+        window.twttr.widgets.createTweet(id, div);
+      }
+
+      cursor = data.nextCursor;
+      hasMore = data.hasMore;
+      loading = false;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) loadMore();
+    });
+
+    observer.observe(document.getElementById("sentinel"));
+
+    loadMore();
+
+    // ダークモード切替
+    const toggle = document.getElementById("modeToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      toggle.textContent = document.body.classList.contains("dark")
+        ? "☀️ ライトモード"
+        : "🌙 ダークモード";
+    });
+  </script>
+
+</body>
+</html>

@@ -1,4 +1,12 @@
 import type { NextConfig } from "next";
+<<<<<<< HEAD
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+=======
 import withSerwistInit from "@serwist/next";
 
 const withSerwist = withSerwistInit({
@@ -13,3 +21,4 @@ const nextConfig: NextConfig = {
 };
 
 export default withSerwist(nextConfig);
+>>>>>>> 6d8c2a5b4716c4e1ec28fd841fb832a75ffd5ae6

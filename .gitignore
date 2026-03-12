@@ -39,6 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+<<<<<<< HEAD
+=======
 
 public/sw*
 public/swe-worker*
+>>>>>>> 6d8c2a5b4716c4e1ec28fd841fb832a75ffd5ae6
